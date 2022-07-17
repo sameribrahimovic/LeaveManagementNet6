@@ -39,6 +39,31 @@ namespace LeaveManagement.Web.Repositories
                                                             && q.Period == period);
         }
 
+        public Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<LeaveAllocationEditVM> GetEmployeeAllocation(int id)
+        {
+            var allocation = await context.leaveAllocations
+                .Include(q => q.LeaveType)
+                //.ProjectTo<LeaveAllocationEditVM>(configurationProvider)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (allocation == null)
+            {
+                return null;
+            }
+
+            var employee = await userManager.FindByIdAsync(allocation.EmployeeId);
+
+            var model = mapper.Map<LeaveAllocationEditVM>(allocation);
+            model.Employee = mapper.Map<EmployeeListVM>(await userManager.FindByIdAsync(allocation.EmployeeId));
+
+            return model;
+        }
+
         public async Task<EmployeeAllocationVM> GetEmployeeAllocations(string employeeId)
         {
             var allocations = await context.leaveAllocations
@@ -88,6 +113,9 @@ namespace LeaveManagement.Web.Repositories
             //}
         }
 
-
+        public Task<bool> UpdateEmployeeAllocation(LeaveAllocationEditVM model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
