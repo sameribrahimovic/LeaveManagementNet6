@@ -22,5 +22,6 @@ namespace LeaveManagement.Web.Data
             builder.ApplyConfiguration(new UserRoleSeedConfiguration());
         }
 
+
     }
 }
