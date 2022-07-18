@@ -39,9 +39,9 @@ namespace LeaveManagement.Web.Repositories
                                                             && q.Period == period);
         }
 
-        public Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId)
+        public async Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId)
         {
-            throw new NotImplementedException();
+            return await context.leaveAllocations.FirstOrDefaultAsync(q => q.EmployeeId == employeeId && q.LeaveTypeId == leaveTypeId);
         }
 
         public async Task<LeaveAllocationEditVM> GetEmployeeAllocation(int id)
@@ -113,9 +113,23 @@ namespace LeaveManagement.Web.Repositories
             //}
         }
 
-        public Task<bool> UpdateEmployeeAllocation(LeaveAllocationEditVM model)
+        public async Task<bool> UpdateEmployeeAllocation(LeaveAllocationEditVM model)
         {
-            throw new NotImplementedException();
+            var leaveAllocation = await GetAsync(model.Id);
+            if (leaveAllocation == null)
+            {
+                return false;
+            }
+            leaveAllocation.Period = model.Period;
+            leaveAllocation.NumberOfDays = model.NumberOfDays;
+            await UpdateAsync(leaveAllocation);
+
+            var user = await userManager.FindByIdAsync(leaveAllocation.EmployeeId);
+
+            await emailSender.SendEmailAsync(user.Email, $"Leave Allocation Updated for {leaveAllocation.Period}",
+                "Please review your leave allocations.");
+
+            return true;
         }
     }
 }
