@@ -13,6 +13,7 @@ namespace LeaveManagement.Web.Data
         }
         public DbSet<LeaveType> leaveTypes { get; set; }
         public DbSet<LeaveAllocation> leaveAllocations { get; set; }
+        public DbSet<LeaveRequest> leaveRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
