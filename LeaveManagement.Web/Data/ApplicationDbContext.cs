@@ -22,9 +22,5 @@ namespace LeaveManagement.Web.Data
             builder.ApplyConfiguration(new UserSeedConfiguration());
             builder.ApplyConfiguration(new UserRoleSeedConfiguration());
         }
-
-        public DbSet<LeaveManagement.Web.Models.LeaveAllocationEditVM>? LeaveAllocationEditVM { get; set; }
-
-
     }
 }
