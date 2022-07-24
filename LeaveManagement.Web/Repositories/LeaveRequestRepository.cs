@@ -62,15 +62,30 @@ namespace LeaveManagement.Web.Repositories
             //    $"{leaveRequest.StartDate} to {leaveRequest.EndDate} has been {approvalStatus}");
         }
 
-        public async Task CreateLeaveRequest(LeaveRequestCreateVM model)
+        public async Task<bool> CreateLeaveRequest(LeaveRequestCreateVM model)
         {
             var user = await userManager.GetUserAsync(httpContextAccessor?.HttpContext?.User);
+            var leaveAllocation = await leaveAllocationRepository.GetEmployeeAllocation(user.Id, model.LeaveTypeId);
+
+            if (leaveAllocation == null)
+            {
+                return false;
+            }
+
+            int daysRequested = (int)(model.EndDate.Value - model.StartDate.Value).TotalDays;
+
+            if (daysRequested > leaveAllocation.NumberOfDays)
+            {
+                return false;
+            }
 
             var leaveRequest = mapper.Map<LeaveRequest>(model);
             leaveRequest.DateRequested = DateTime.Now;
             leaveRequest.RequestingEmployeeId = user.Id;
 
             await AddAsync(leaveRequest);
+
+            return true;
         }
 
         public async Task<AdminLeaveRequestViewVM> GetAdminLeaveRequestList()
